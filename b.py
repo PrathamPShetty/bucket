@@ -32,3 +32,29 @@ if 'Contents' in response:
             print(f"Error downloading {file_key}: {e}")
 else:
     print("No files found in the 'alumnis/' folder!")
+
+
+
+# **Your SAS URL (temporary access link)**
+# **Initialize Blob Service Client**
+# blob_service_client = BlobServiceClient(account_url=sas_url)
+
+# **Container name (Extracted from SAS URL)**
+
+
+# # **Specify file to upload**
+# local_file_path = "./muhammedalfas07.jpeg"  # Change this to your file path
+# blob_name = os.path.basename(local_file_path)  # Name of the file in the cloud
+
+# try:
+#     # **Get a client for the blob (file)**
+#     blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+
+#     # **Upload the file**
+#     with open(local_file_path, "rb") as data:
+#         blob_client.upload_blob(data, overwrite=True)
+
+#     print(f"✅ File '{blob_name}' uploaded successfully to Azure Blob Storage.")
+
+# except Exception as e:
+#     print(f"❌ Error: {e}")
