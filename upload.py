@@ -1,49 +1,28 @@
-from azure.storage.blob import BlobServiceClient
+from azure.storage.blob import ContainerClient, ContentSettings
 import os
 
-# **Your SAS URL (temporary access link)**
-sas_url = "https://sitmng.blob.core.windows.net/alumni?sp=racwd&st=2025-03-04T14:53:13Z&se=2028-12-31T22:53:13Z&spr=https&sv=2022-11-02&sr=c&sig=d77JujJT2%2F4Sdn2ZXO0OtYocI8l5SdXpHGcvA8tGhWc%3D"
-# **Initialize Blob Service Client**
-blob_service_client = BlobServiceClient(account_url=sas_url)
+CONTAINER_SAS_URL = "https://sitmng.blob.core.windows.net/alumni?sp=racwdli&st=2025-05-20T05:46:53Z&se=3025-05-20T13:46:53Z&sv=2024-11-04&sr=c&sig=kDGo7afO7ZwRvK2Jj9gtOuRgg5yxF%2BvsV0745jOva7M%3D"  # Use correct SAS here
+FOLDER_PATH = "./upload/"
 
-# **Container name (Extracted from SAS URL)**
-container_name = "alumni"
+def upload_image(image_path):
+    try:
+        container_client = ContainerClient.from_container_url(CONTAINER_SAS_URL)
+        blob_name = os.path.basename(image_path)
+        blob_client = container_client.get_blob_client(blob_name)
 
-# # **Specify file to upload**
-# local_file_path = "./muhammedalfas07.jpeg"  # Change this to your file path
-# blob_name = os.path.basename(local_file_path)  # Name of the file in the cloud
+        with open(image_path, "rb") as data:
+            blob_client.upload_blob(
+                data,
+                overwrite=True,
+                content_settings=ContentSettings(content_type="image/jpeg")
+            )
 
-# try:
-#     # **Get a client for the blob (file)**
-#     blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+        print(f"✅ Uploaded: {blob_client.url}")
+    except Exception as e:
+        print(f"❌ Error uploading {image_path}: {e}")
 
-#     # **Upload the file**
-#     with open(local_file_path, "rb") as data:
-#         blob_client.upload_blob(data, overwrite=True)
-
-#     print(f"✅ File '{blob_name}' uploaded successfully to Azure Blob Storage.")
-
-# except Exception as e:
-#     print(f"❌ Error: {e}")
-
-
-
-
-
-
-
-
-
-
-folder_path = "D:/bucket/upload/"  # Change this to your folder
-
-for file_name in os.listdir(folder_path):
-    file_path = os.path.join(folder_path, file_name)
-    
-    if os.path.isfile(file_path):
-        blob_client = blob_service_client.get_blob_client(container=container_name, blob=file_name)
-        
-        with open(file_path, "rb") as data:
-            blob_client.upload_blob(data, overwrite=True)
-        
-        print(f"✅ Uploaded: {file_name}")
+if __name__ == "__main__":
+    for file in os.listdir(FOLDER_PATH):
+        file_path = os.path.join(FOLDER_PATH, file)
+        if os.path.isfile(file_path):
+            upload_image(file_path)
